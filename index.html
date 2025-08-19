@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RituaLens</title>
-    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👁️</text></svg>">
 <script type="importmap">
 {
@@ -14,105 +17,100 @@
 }
 </script>
 </head>
-<body>
-    <div id="app-container">
-        <header id="app-header">
-            <h1>
-                <!-- SVG Icon for Square and Compasses -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="header-icon"><path d="M3 3v18h18"></path><path d="M21 21l-9-9"></path><path d="m12 12 4.5 4.5"></path><path d="M12 3h6v6"></path><path d="M12 3v9"></path></svg>
+<body class="bg-primary-900 text-primary-300 font-sans antialiased">
+    <div id="app-container" class="grid grid-cols-[280px_1fr] grid-rows-[72px_1fr] h-screen w-screen overflow-hidden">
+        <header id="app-header" class="bg-primary-800 border-b border-primary-700 flex items-center px-10 text-primary-100 shadow-lg">
+            <h1 class="font-serif font-semibold text-3xl flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-accent-400">
+                    <path d="M3 3v18h18"></path>
+                    <path d="M21 21l-9-9"></path>
+                    <path d="m12 12 4.5 4.5"></path>
+                    <path d="M12 3h6v6"></path>
+                    <path d="M12 3v9"></path>
+                </svg>
                 RituaLens
             </h1>
         </header>
-        <nav id="sidebar">
-            <div class="sidebar-top">
-                <a href="#" id="nav-analyse" class="nav-item active" aria-label="Analyse">
-                    <!-- SVG for Analysis/Feather -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>
+        <nav id="sidebar" class="bg-primary-800 border-r border-primary-700 p-6 flex flex-col justify-between">
+            <div class="flex flex-col gap-2">
+                <a href="#" id="nav-analyse" class="relative flex items-center gap-4 py-3 px-4 rounded font-medium transition-all duration-200 ease-in-out transform hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-colors duration-200"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>
                     <span>Analyse</span>
                 </a>
-                <a href="#" id="nav-synthese" class="nav-item" aria-label="Synthese">
-                    <!-- SVG for Synthesis/Layers -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <a href="#" id="nav-synthese" class="relative flex items-center gap-4 py-3 px-4 rounded font-medium transition-all duration-200 ease-in-out transform hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-colors duration-200"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                     <span>Synthese</span>
                 </a>
-                <a href="#" id="nav-explorer" class="nav-item" aria-label="Lens Explorer">
-                    <!-- SVG for Compass/Explore -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                <a href="#" id="nav-explorer" class="relative flex items-center gap-4 py-3 px-4 rounded font-medium transition-all duration-200 ease-in-out transform hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-colors duration-200"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
                     <span>Lens Explorer</span>
                 </a>
             </div>
-            <div class="sidebar-bottom">
-                 <div class="ritual-flow">
-                    <h3 class="flow-title">Concepten</h3>
-                    <p>Analyse & Synthese</p>
-                </div>
+            <div class="border-t border-primary-700 pt-4 text-center">
+                <h3 class="font-serif text-primary-300 text-xl font-semibold mb-2">Concepten</h3>
+                <p class="text-primary-400 text-base font-medium">Analyse & Synthese</p>
             </div>
         </nav>
         
-        <main id="main-content" class="view">
-            <section id="text-input-panel" class="panel">
-                <div class="panel-header">
-                    <h2>Rituele Tekst</h2>
+        <main id="main-content" class="overflow-y-auto bg-primary-900 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-8 p-8 h-[calc(100vh-72px)] transition-opacity duration-500 ease-in-out">
+            <section class="bg-primary-800 flex flex-col overflow-hidden rounded-lg shadow-2xl">
+                <div class="p-3 px-6 border-b border-primary-700 bg-primary-800 flex-shrink-0">
+                    <h2 class="font-serif text-2xl text-primary-100 font-semibold">Rituele Tekst</h2>
                 </div>
-                <div class="panel-content">
-                    <textarea id="ritual-text-input" placeholder="Voer hier de rituele tekst in of plak deze vanuit een document..."></textarea>
+                <div class="p-0 flex-grow">
+                    <textarea id="ritual-text-input" placeholder="Voer hier de rituele tekst in of plak deze vanuit een document..." class="w-full h-full bg-transparent border-none rounded p-8 text-primary-300 font-sans text-base leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-accent-400"></textarea>
                 </div>
             </section>
-            <section id="lens-selection-panel" class="panel">
-                 <div class="panel-header">
-                    <h2>Conceptuele Lenzen</h2>
+            <section class="bg-primary-800 flex flex-col overflow-hidden rounded-lg shadow-2xl">
+                 <div class="p-3 px-6 border-b border-primary-700 bg-primary-800 flex-shrink-0">
+                    <h2 class="font-serif text-2xl text-primary-100 font-semibold">Conceptuele Lenzen</h2>
                 </div>
-                 <div class="panel-content" id="lens-list">
-                    <!-- Lens items will be injected here by TS -->
+                 <div class="p-6 overflow-y-auto flex-grow" id="lens-list">
                  </div>
             </section>
-            <section id="interpretation-panel" class="panel">
-                 <div class="panel-header">
-                    <h2>Analyse & Interpretatie</h2>
+            <section class="bg-primary-800 flex flex-col overflow-hidden rounded-lg shadow-2xl">
+                 <div class="p-3 px-6 border-b border-primary-700 bg-primary-800 flex-shrink-0">
+                    <h2 class="font-serif text-2xl text-primary-100 font-semibold">Analyse & Interpretatie</h2>
                 </div>
-                 <div class="panel-content" id="interpretation-content">
-                    <div class="placeholder">Selecteer een lens en subcode om de analyse te starten.</div>
-                    <!-- Interpretation content will be injected here -->
+                 <div class="p-6 overflow-y-auto flex-grow" id="interpretation-content">
                  </div>
             </section>
         </main>
         
-        <div id="synthesis-view" class="view hidden">
-           <div class="synthesis-builder">
-                <aside id="synthesis-lens-library-container" class="panel">
-                    <div class="panel-header">
-                        <h2>Lenzenbibliotheek</h2>
+        <div id="synthesis-view" class="hidden overflow-y-auto bg-primary-900 h-[calc(100vh-72px)] transition-opacity duration-500 ease-in-out">
+           <div class="grid grid-cols-[320px_1fr] gap-8 p-8 h-full">
+                <aside class="bg-primary-800 flex flex-col overflow-hidden rounded-lg shadow-2xl">
+                    <div class="p-3 px-6 border-b border-primary-700 bg-primary-800 flex-shrink-0">
+                        <h2 class="font-serif text-2xl text-primary-100 font-semibold">Lenzenbibliotheek</h2>
                     </div>
-                    <div class="panel-content" id="synthesis-lens-library">
-                        <!-- Draggable lens items will be injected here -->
+                    <div class="p-6 overflow-y-auto flex-grow" id="synthesis-lens-library">
                     </div>
                 </aside>
-                <main id="synthesis-main-content">
-                    <section id="synthesis-text-panel" class="panel">
-                         <div class="panel-header">
-                            <h2>Rituele Tekst</h2>
+                <main id="synthesis-main-content" class="grid grid-rows-[250px_1fr] gap-8 overflow-hidden">
+                    <section class="bg-primary-800 flex flex-col overflow-hidden rounded-lg shadow-2xl">
+                         <div class="p-3 px-6 border-b border-primary-700 bg-primary-800 flex-shrink-0">
+                            <h2 class="font-serif text-2xl text-primary-100 font-semibold">Rituele Tekst</h2>
                         </div>
-                        <div class="panel-content">
-                            <textarea id="synthesis-ritual-text-input" placeholder="Voer hier de rituele tekst in om de synthese te starten..."></textarea>
+                        <div class="p-0 flex-grow">
+                            <textarea id="synthesis-ritual-text-input" placeholder="Voer hier de rituele tekst in om de synthese te starten..." class="w-full h-full bg-transparent border-none rounded p-8 text-primary-300 font-sans text-base leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-accent-400"></textarea>
                         </div>
                     </section>
-                    <section id="synthesis-canvas-panel" class="panel">
-                        <div class="panel-header">
-                            <h2>Synthese Canvas: Combineer 4 Lenzen</h2>
+                    <section class="bg-primary-800 flex flex-col overflow-hidden rounded-lg shadow-2xl">
+                        <div class="p-3 px-6 border-b border-primary-700 bg-primary-800 flex-shrink-0">
+                            <h2 class="font-serif text-2xl text-primary-100 font-semibold">Synthese Canvas: Combineer 4 Lenzen</h2>
                         </div>
-                        <div class="panel-content">
-                            <div id="synthesis-drop-zones">
-                                <!-- Drop zones will be injected here -->
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div id="synthesis-drop-zones" class="grid grid-cols-2 grid-rows-2 gap-4 mb-6">
                             </div>
-                            <div id="synthesis-actions">
-                                <button id="synthesis-generate-btn" class="ai-button" disabled>
+                            <div id="synthesis-actions" class="mb-6">
+                                <button id="synthesis-generate-btn" class="w-full bg-accent-400 text-primary-900 rounded py-3 px-6 text-base font-semibold inline-flex items-center justify-center gap-3 transition-all duration-200 ease-in-out hover:bg-accent-300 disabled:bg-primary-700 disabled:text-primary-400 disabled:cursor-not-allowed disabled:opacity-60 transform hover:scale-105" disabled>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                                     <span>Genereer Synthese</span>
                                 </button>
                             </div>
-                            <div id="synthesis-result-container">
-                                <label for="synthesis-result-textarea">Gelaagde Synthese</label>
-                                <textarea id="synthesis-result-textarea" placeholder="De door AI gegenereerde synthese van de vier gekozen lenzen verschijnt hier..." readonly></textarea>
+                            <div id="synthesis-result-container" class="flex-grow flex flex-col">
+                                <label for="synthesis-result-textarea" class="block mb-2 text-primary-100 font-medium">Gelaagde Synthese</label>
+                                <textarea id="synthesis-result-textarea" placeholder="De door AI gegenereerde synthese van de vier gekozen lenzen verschijnt hier..." readonly class="w-full min-h-[200px] flex-grow bg-primary-800 border border-primary-700 rounded p-4 text-primary-300 font-sans text-base leading-relaxed resize-none"></textarea>
                             </div>
                         </div>
                     </section>
@@ -120,8 +118,7 @@
            </div>
         </div>
 
-        <div id="lens-explorer-view" class="view hidden">
-            <!-- Lens Explorer content will be injected here by TS -->
+        <div id="lens-explorer-view" class="hidden overflow-y-auto bg-primary-900 p-12 transition-opacity duration-500 ease-in-out">
         </div>
 
     </div>
