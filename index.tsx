@@ -1,4 +1,4 @@
-import './index.css';
+import './style.css';
 import { GoogleGenAI } from "@google/genai";
 
 // --- DATA STRUCTURES --- //
@@ -237,15 +237,36 @@ class RituaLensApp {
     }
 
     private updateUI() {
-        // Handle view visibility
-        this.analysisView.classList.toggle('hidden', this.state.activeView !== 'analyse');
-        this.synthesisView.classList.toggle('hidden', this.state.activeView !== 'synthese');
-        this.lensExplorerView.classList.toggle('hidden', this.state.activeView !== 'explorer');
+        const views = {
+            analyse: this.analysisView,
+            synthese: this.synthesisView,
+            explorer: this.lensExplorerView,
+        };
+
+        Object.entries(views).forEach(([viewName, viewElement]) => {
+            const isActive = this.state.activeView === viewName;
+            if (isActive) {
+                viewElement.classList.remove('hidden');
+                setTimeout(() => viewElement.classList.remove('opacity-0'), 10);
+            } else {
+                viewElement.classList.add('opacity-0');
+                setTimeout(() => viewElement.classList.add('hidden'), 500);
+            }
+        });
 
         // Handle nav item active state
-        this.navAnalyse.classList.toggle('active', this.state.activeView === 'analyse');
-        this.navSynthese.classList.toggle('active', this.state.activeView === 'synthese');
-        this.navExplorer.classList.toggle('active', this.state.activeView === 'explorer');
+        const navItems = [this.navAnalyse, this.navSynthese, this.navExplorer];
+        navItems.forEach(item => {
+            item.classList.remove('active-nav-link');
+            item.classList.add('text-primary-400', 'hover:bg-primary-700', 'hover:text-accent-400');
+        });
+        if (this.state.activeView === 'analyse') {
+            this.navAnalyse.classList.add('active-nav-link');
+        } else if (this.state.activeView === 'synthese') {
+            this.navSynthese.classList.add('active-nav-link');
+        } else if (this.state.activeView === 'explorer') {
+            this.navExplorer.classList.add('active-nav-link');
+        }
         
         // Re-render dynamic content for the active view
         if (this.state.activeView === 'analyse') {
@@ -269,23 +290,29 @@ class RituaLensApp {
         this.lensListContainer.innerHTML = '';
         LENSES_DATA.forEach(lens => {
             const lensGroup = document.createElement('div');
-            lensGroup.className = 'lens-group';
+            lensGroup.className = 'mb-8';
 
             const title = document.createElement('div');
-            title.className = 'lens-title';
-            title.innerHTML = `<h3>${lens.code}</h3><span>${lens.name}</span>`;
+            title.className = 'flex justify-between items-center p-3 bg-primary-800 border border-primary-700 rounded-md text-primary-100 cursor-default';
+            title.innerHTML = `<h3 class="font-serif text-xl font-semibold">${lens.code}</h3><span class="text-sm">${lens.name}</span>`;
             lensGroup.appendChild(title);
 
             const subCodeList = document.createElement('ul');
-            subCodeList.className = 'subcode-list';
+            subCodeList.className = 'list-none p-0 mt-2';
             
             lens.subCodes.forEach(subCode => {
                 const listItem = document.createElement('li');
                 listItem.textContent = `${subCode.code}: ${subCode.name}`;
                 listItem.dataset.lensCode = lens.code;
                 listItem.dataset.subCode = subCode.code;
+
+                const baseClasses = 'py-2 px-4 rounded cursor-pointer text-primary-400 transition-all duration-200 border border-transparent transform hover:scale-105';
+                const hoverClasses = 'hover:bg-accent-400/10 hover:text-primary-100';
+                const activeClasses = 'bg-accent-400/10 text-accent-400 font-semibold border-accent-400';
+
+                listItem.className = `${baseClasses} ${hoverClasses}`;
                 if(this.state.selectedSubCode === subCode.code && this.state.selectedLensCode === lens.code) {
-                    listItem.classList.add('active');
+                    listItem.className = `${baseClasses} ${activeClasses}`;
                 }
 
                 listItem.addEventListener('click', () => {
@@ -306,7 +333,7 @@ class RituaLensApp {
 
         if (!selectedLensCode || !selectedSubCode || !ritualText.trim()) {
             resultTextarea.value = "Voer eerst een rituele tekst in de linkerkolom in en selecteer een lens om een analyse te kunnen starten.";
-            resultTextarea.classList.add('error');
+            resultTextarea.classList.add('text-red-400');
             return;
         }
 
@@ -315,9 +342,9 @@ class RituaLensApp {
         if (!subCode) return;
 
         analysisButton.disabled = true;
-        analysisButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spinner"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg><span>Analyseren...</span>`;
+        analysisButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg><span>Analyseren...</span>`;
         resultTextarea.value = 'De AI-analyse wordt voorbereid en uitgevoerd. Een ogenblik geduld...';
-        resultTextarea.classList.remove('error');
+        resultTextarea.classList.remove('text-red-400');
 
         const promptQuestions = subCode.prompts.map(p => `- ${p.question}`).join('\n');
         const analysisInstruction = this.state.isDetailedAnalysis 
@@ -331,7 +358,7 @@ class RituaLensApp {
         } catch (error) {
             console.error("AI Analysis Error:", error);
             resultTextarea.value = `Er is een fout opgetreden bij de AI-analyse. Controleer uw API-sleutel en probeer het later opnieuw. Details: ${error instanceof Error ? error.message : String(error)}`;
-            resultTextarea.classList.add('error');
+            resultTextarea.classList.add('text-red-400');
         } finally {
             analysisButton.disabled = false;
             analysisButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path><path d="M5 3v4"></path><path d="M19 17v4"></path><path d="M3 5h4"></path><path d="M17 19h4"></path></svg><span>Analyseer met AI</span>`;
@@ -342,7 +369,7 @@ class RituaLensApp {
         const { selectedLensCode, selectedSubCode } = this.state;
 
         if (!selectedLensCode || !selectedSubCode) {
-            this.interpretationContentContainer.innerHTML = `<div class="placeholder">Selecteer een lens en subcode om de analyse te starten.</div>`;
+            this.interpretationContentContainer.innerHTML = `<div class="flex justify-center items-center h-full text-primary-500 text-center p-8">Selecteer een lens en subcode om de analyse te starten.</div>`;
             return;
         }
 
@@ -350,30 +377,38 @@ class RituaLensApp {
         const subCode = lens?.subCodes.find(sc => sc.code === selectedSubCode);
         if (!subCode) return;
 
-        const promptsHTML = subCode.prompts.map(p => `<li>${p.question}</li>`).join('');
+        const promptsHTML = subCode.prompts.map(p => `<li class="relative pl-6 mb-3 before:content-['•'] before:text-accent-400 before:absolute before:left-0 before:font-bold">${p.question}</li>`).join('');
+
+        const toggleBaseClasses = "relative w-11 h-6 bg-primary-700 rounded-full cursor-pointer transition-colors duration-200 ease-in-out border border-primary-600";
+        const toggleActiveClasses = "bg-accent-400 border-accent-400";
+        const handleBaseClasses = "absolute top-0.5 left-0.5 w-5 h-5 bg-primary-300 rounded-full transition-transform duration-200 ease-in-out";
+        const handleActiveClasses = "transform translate-x-5 bg-primary-900";
+
         this.interpretationContentContainer.innerHTML = `
-            <div class="interpretation-header">
-                <h3 class="subcode-title">${subCode.code}: ${subCode.name}</h3>
-                <p class="subcode-type">${subCode.type}</p>
-            </div>
-            <div class="interpretation-prompts"><ul>${promptsHTML}</ul></div>
-            <div class="interpretation-ai-action">
-                <div class="ai-controls">
-                    <button id="ai-analysis-btn" class="ai-button">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path><path d="M5 3v4"></path><path d="M19 17v4"></path><path d="M3 5h4"></path><path d="M17 19h4"></path></svg>
-                         <span>Analyseer met AI</span>
-                    </button>
-                    <div class="toggle-switch-container">
-                        <label id="detail-toggle-label" for="detail-toggle-switch">Gedetailleerd</label>
-                        <div id="detail-toggle-switch" class="toggle-switch ${this.state.isDetailedAnalysis ? 'active' : ''}" role="switch" aria-checked="${this.state.isDetailedAnalysis}" tabindex="0">
-                            <div class="toggle-switch-handle"></div>
+            <div class="flex flex-col h-full p-2">
+                <div class="mb-6">
+                    <h3 class="font-serif text-accent-400 text-3xl font-semibold mb-2">${subCode.code}: ${subCode.name}</h3>
+                    <p class="text-primary-400 italic mb-6">${subCode.type}</p>
+                </div>
+                <div class="mb-8"><ul class="list-none">${promptsHTML}</ul></div>
+                <div class="border-t border-primary-700 pt-8 mb-8">
+                    <div class="flex justify-between items-center gap-6">
+                        <button id="ai-analysis-btn" class="w-full bg-accent-400 text-primary-900 rounded py-4 px-8 text-base font-semibold inline-flex items-center justify-center gap-3 transition-all duration-200 ease-in-out hover:bg-accent-300 disabled:bg-primary-700 disabled:text-primary-400 disabled:cursor-not-allowed disabled:opacity-60 transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path><path d="M5 3v4"></path><path d="M19 17v4"></path><path d="M3 5h4"></path><path d="M17 19h4"></path></svg>
+                            <span>Analyseer met AI</span>
+                        </button>
+                        <div class="flex items-center gap-3 flex-shrink-0">
+                            <label id="detail-toggle-label" for="detail-toggle-switch" class="text-primary-400 text-sm font-medium cursor-pointer select-none">Gedetailleerd</label>
+                            <div id="detail-toggle-switch" class="${toggleBaseClasses} ${this.state.isDetailedAnalysis ? toggleActiveClasses : ''}" role="switch" aria-checked="${this.state.isDetailedAnalysis}" tabindex="0">
+                                <div class="${handleBaseClasses} ${this.state.isDetailedAnalysis ? handleActiveClasses : ''}"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="interpretation-notes">
-                <label for="interpretation-textarea">AI Analyse & Persoonlijke Reflectie</label>
-                <textarea id="interpretation-textarea" placeholder="Noteer hier uw gedachten en inzichten, of klik hierboven om een AI-analyse te starten..."></textarea>
+                <div class="flex-grow flex flex-col">
+                    <label for="interpretation-textarea" class="block mb-2 text-primary-100 font-medium">AI Analyse & Persoonlijke Reflectie</label>
+                    <textarea id="interpretation-textarea" placeholder="Noteer hier uw gedachten en inzichten, of klik hierboven om een AI-analyse te starten..." class="w-full min-h-[200px] flex-grow bg-primary-800 border border-primary-700 rounded p-4 text-primary-300 font-sans text-base leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-accent-400"></textarea>
+                </div>
             </div>`;
 
         document.getElementById('ai-analysis-btn')?.addEventListener('click', () => this.handleAnalysis());
@@ -391,18 +426,18 @@ class RituaLensApp {
         this.synthesisLensLibrary.innerHTML = '';
         LENSES_DATA.forEach(lens => {
             const group = document.createElement('div');
-            group.className = 'lens-group';
-            group.innerHTML = `<div class="lens-title"><h3>${lens.name}</h3></div>`;
+            group.className = 'mb-4';
+            group.innerHTML = `<div class="font-serif text-2xl font-semibold text-primary-100 mb-2">${lens.name}</div>`;
 
             const list = document.createElement('div');
-            list.className = 'synthesis-lens-list';
+            list.className = 'flex flex-col gap-2';
             lens.subCodes.forEach(subCode => {
                 const item = document.createElement('div');
-                item.className = 'synthesis-lens-item';
+                item.className = 'bg-primary-800 border border-primary-700 rounded-md p-2 cursor-grab transition-all duration-200 hover:bg-primary-700 hover:text-primary-100 user-select-none transform hover:scale-105';
                 item.draggable = true;
                 item.dataset.lensCode = lens.code;
                 item.dataset.subCode = subCode.code;
-                item.innerHTML = `<span class="lens-item-code">${subCode.code}</span><span class="lens-item-name">${subCode.name}</span>`;
+                item.innerHTML = `<span class="font-bold text-accent-400 mr-2">${subCode.code}</span><span class="text-primary-300">${subCode.name}</span>`;
                 item.addEventListener('dragstart', this.handleDragStart.bind(this));
                 item.addEventListener('dragend', this.handleDragEnd.bind(this));
                 list.appendChild(item);
@@ -416,20 +451,21 @@ class RituaLensApp {
         this.synthesisDropZonesContainer.innerHTML = '';
         this.state.synthesisSlots.forEach((slot, index) => {
             const zone = document.createElement('div');
-            zone.className = 'drop-zone';
+            zone.className = 'border-2 border-dashed border-primary-700 rounded-lg p-4 min-h-[140px] flex flex-col justify-center items-center text-center text-primary-500 transition-all duration-200 relative';
             zone.dataset.slotIndex = String(index);
 
             if (slot) {
-                zone.classList.add('filled');
+                zone.classList.remove('border-dashed', 'border-primary-700', 'text-primary-500');
+                zone.classList.add('border-solid', 'border-primary-600', 'bg-primary-800', 'items-start', 'text-left');
                 zone.innerHTML = `
-                    <button class="clear-btn" aria-label="Verwijder lens">&times;</button>
-                    <div class="subcode-title">${slot.lensCode} / ${slot.code}</div>
-                    <div class="subcode-name">${slot.name}</div>
-                    <p class="subcode-type">${slot.type}</p>
+                    <button class="absolute top-2 right-2 text-primary-500 hover:text-red-400 text-xl leading-none p-1 rounded-full transition-colors">&times;</button>
+                    <div class="text-accent-400 font-bold">${slot.lensCode} / ${slot.code}</div>
+                    <div class="text-primary-100">${slot.name}</div>
+                    <p class="text-sm text-primary-400 italic mt-1">${slot.type}</p>
                 `;
-                zone.querySelector('.clear-btn')?.addEventListener('click', () => this.handleClearSlot(index));
+                zone.querySelector('button')?.addEventListener('click', () => this.handleClearSlot(index));
             } else {
-                zone.innerHTML = `<span class="placeholder-text">Sleep lens ${index + 1} hier</span>`;
+                zone.innerHTML = `<span class="italic">Sleep lens ${index + 1} hier</span>`;
             }
             
             zone.addEventListener('dragover', this.handleDragOver.bind(this));
@@ -442,7 +478,7 @@ class RituaLensApp {
 
     private handleDragStart(e: DragEvent) {
         const target = e.target as HTMLElement;
-        target.classList.add('dragging');
+        target.classList.add('opacity-50', 'border-dashed');
         if (e.dataTransfer) {
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', JSON.stringify({
@@ -453,28 +489,26 @@ class RituaLensApp {
     }
 
     private handleDragEnd(e: DragEvent) {
-        (e.target as HTMLElement).classList.remove('dragging');
+        (e.target as HTMLElement).classList.remove('opacity-50', 'border-dashed');
     }
 
     private handleDragOver(e: DragEvent) {
         e.preventDefault();
         const target = (e.currentTarget as HTMLElement);
-        if(target.classList.contains('drop-zone')){
-            target.classList.add('drag-over');
+        if(!target.innerHTML.includes('button')) {
+            target.classList.add('border-accent-400', 'bg-accent-400/10');
         }
     }
 
     private handleDragLeave(e: DragEvent) {
         const target = (e.currentTarget as HTMLElement);
-         if(target.classList.contains('drop-zone')){
-            target.classList.remove('drag-over');
-        }
+        target.classList.remove('border-accent-400', 'bg-accent-400/10');
     }
     
     private handleDrop(e: DragEvent) {
         e.preventDefault();
         const target = (e.currentTarget as HTMLElement);
-        target.classList.remove('drag-over');
+        target.classList.remove('border-accent-400', 'bg-accent-400/10');
 
         const slotIndex = parseInt(target.dataset.slotIndex!, 10);
         const data = JSON.parse(e.dataTransfer!.getData('text/plain'));
@@ -505,9 +539,9 @@ class RituaLensApp {
         if(this.synthesisGenerateBtn.disabled) return;
 
         this.synthesisGenerateBtn.disabled = true;
-        this.synthesisGenerateBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spinner"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg><span>Synthese genereren...</span>`;
+        this.synthesisGenerateBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg><span>Synthese genereren...</span>`;
         this.synthesisResultTextarea.value = "De AI bereidt een gelaagde synthese voor op basis van de vier gekozen lenzen. Dit kan even duren...";
-        this.synthesisResultTextarea.classList.remove('error');
+        this.synthesisResultTextarea.classList.remove('text-red-400');
 
         const ritualText = (document.getElementById('synthesis-ritual-text-input') as HTMLTextAreaElement).value;
         const lensDescriptions = this.state.synthesisSlots.map((slot, index) => 
@@ -522,7 +556,7 @@ class RituaLensApp {
         } catch (error) {
             console.error("AI Synthesis Error:", error);
             this.synthesisResultTextarea.value = `Er is een fout opgetreden bij de AI-synthese. Controleer uw API-sleutel en probeer het later opnieuw. Details: ${error instanceof Error ? error.message : String(error)}`;
-            this.synthesisResultTextarea.classList.add('error');
+            this.synthesisResultTextarea.classList.add('text-red-400');
         } finally {
             this.updateSynthesisButtonState();
             this.synthesisGenerateBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span>Genereer Synthese</span>`;
@@ -543,7 +577,7 @@ class RituaLensApp {
                     lensGrid.appendChild(this.createExplorerCard(subCode));
                 });
             } else {
-                lensGrid.innerHTML = '<p class="card-section-content">Deze lens is nog niet in detail uitgewerkt.</p>';
+                lensGrid.innerHTML = '<p class="text-primary-500">Deze lens is nog niet in detail uitgewerkt.</p>';
             }
             fragment.appendChild(lensSection);
         });
@@ -554,34 +588,34 @@ class RituaLensApp {
 
     private createExplorerSection(title: string, description: string): HTMLElement {
         const section = document.createElement('section');
-        section.className = 'explorer-section';
+        section.className = 'mb-12';
         section.innerHTML = `
-            <h2 class="explorer-section-title">${title}</h2>
-            <p class="explorer-section-description">${description}</p>
-            <div class="explorer-grid"></div>
+            <h2 class="font-serif text-5xl font-bold text-primary-100 mb-2 pb-2 border-b border-primary-700">${title}</h2>
+            <p class="text-lg text-primary-400 mb-8 max-w-3xl">${description}</p>
+            <div class="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6"></div>
         `;
         return section;
     }
 
     private createExplorerCard(item: LensSubCode): HTMLElement {
         const card = document.createElement('div');
-        card.className = 'explorer-card';
+        card.className = 'bg-primary-800 border border-primary-700 rounded-lg flex flex-col transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-2xl hover:border-accent-400';
         
         const promptsHTML = `
-            <h4 class="card-section-title">Analyse-prompt / Kernvragen</h4>
-            <div class="card-section-content prompts">
-                <ul>${item.prompts.map(p => `<li>${p.question}</li>`).join('')}</ul>
+            <h4 class="font-semibold text-primary-300 mb-2 text-sm uppercase tracking-wider">Analyse-prompt / Kernvragen</h4>
+            <div class="text-primary-400 text-sm">
+                <ul class="list-none">${item.prompts.map(p => `<li class="relative pl-5 mb-2 before:content-['›'] before:text-accent-400 before:absolute before:left-0">${p.question}</li>`).join('')}</ul>
             </div>
         `;
 
         card.innerHTML = `
-            <div class="explorer-card-header">
-                <div class="code">${item.code}</div>
-                <div class="name">${item.name}</div>
+            <div class="p-4 border-b border-primary-700">
+                <div class="font-mono font-bold text-accent-400 text-2xl font-semibold">${item.code}</div>
+                <div class="text-primary-100 text-lg">${item.name}</div>
             </div>
-            <div class="explorer-card-body">
-                <h4 class="card-section-title">Type / Functie</h4>
-                <p class="card-section-content">${item.type}</p>
+            <div class="p-4 flex-grow">
+                <h4 class="font-semibold text-primary-300 mb-2 text-sm uppercase tracking-wider">Type / Functie</h4>
+                <p class="text-primary-400 text-sm mb-4">${item.type}</p>
                 ${promptsHTML}
             </div>
         `;
