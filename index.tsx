@@ -592,7 +592,7 @@ class RituaLensApp {
         section.innerHTML = `
             <h2 class="font-serif text-5xl font-bold text-primary-100 mb-2 pb-2 border-b border-primary-700">${title}</h2>
             <p class="text-lg text-primary-400 mb-8 max-w-3xl">${description}</p>
-            <div class="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6"></div>
+            <div class="explorer-grid grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6"></div>
         `;
         return section;
     }
